@@ -1,0 +1,13 @@
+{
+  "scopeName": "source.usfm",
+  "patterns": [{ "include": "#expression" }],
+  "repository": {
+    "expression": {
+      "patterns": [{ "include": "#marker" }]
+    },
+    "marker": {
+      "match": "\\\\[a-z0-9*\\-]+",
+      "name": "keyword.marker"
+    }
+  }
+}
