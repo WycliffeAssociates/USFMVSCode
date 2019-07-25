@@ -1,6 +1,6 @@
 # usfmvscode README
 
-This is the README for your extension "usfmvscode". After writing up a brief description, we recommend including the following sections.
+A Visual Studio Code Plugin to provide support for USFM
 
 ## Features
 
