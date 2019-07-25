@@ -4,6 +4,7 @@
     "description": "USFM Support for VS Code",
     "version": "0.0.1",
     "publisher": "wycliffeassociates",
+    "repository": "https://github.com/WycliffeAssociates/USFMVSCode",
     "engines": {
         "vscode": "^1.36.0"
     },
