@@ -13,3 +13,7 @@ Basic syntax highlighting
 ### 0.0.1
 
 Initial release
+
+### 0.1.0
+
+Support for basic syntax checking. Looks for strange markers
