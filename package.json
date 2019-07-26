@@ -2,7 +2,7 @@
     "name": "usfmvscode",
     "displayName": "USFMVSCode",
     "description": "USFM Support for VS Code",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "publisher": "wycliffeassociates",
     "repository": "https://github.com/WycliffeAssociates/USFMVSCode",
     "engines": {
