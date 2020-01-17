@@ -22,6 +22,10 @@ Support for basic syntax checking. Looks for strange markers
 
 Added support for more markers in the syntax checking
 
+### 0.1.2
+
+Added support for more markers in the syntax checking
+
 ## Known issues
 
 Currently there is no support for USFM milestones and those milestone markers will be marked incorrectly by the syntax checker

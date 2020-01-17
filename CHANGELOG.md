@@ -9,3 +9,6 @@ Change log for USFMVSCode
 
 ## [0.1.1]
 - Added more markers to syntax checking
+
+## [0.1.2]
+- Added more markers to syntax checking
