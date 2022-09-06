@@ -1,18 +1,20 @@
 import {
     createConnection,
     TextDocuments,
-    TextDocument,
     Diagnostic,
     DiagnosticSeverity,
     ProposedFeatures,
     InitializeParams,
     DidChangeConfigurationNotification,
-} from 'vscode-languageserver';
+    TextDocumentSyncKind,
+} from 'vscode-languageserver/node';
+
+import { TextDocument } from 'vscode-languageserver-textdocument';
 
 import ValidMarkers from './markers';
 
 let connection = createConnection(ProposedFeatures.all);
-let documents: TextDocuments = new TextDocuments();
+let documents: TextDocuments<TextDocument> = new TextDocuments(TextDocument);
 connection.console.log("hit");
 
 let hasConfigurationCapability: boolean = false;
@@ -27,7 +29,7 @@ connection.onInitialize((params: InitializeParams) => {
 
     return {
         capabilities: {
-            textDocumentSync: documents.syncKind,
+            textDocumentSync: TextDocumentSyncKind.Incremental,
         }
     };
 });

@@ -252,6 +252,8 @@ let ValidMarkers: string[] = [
 "\\em*",
 "\\bd",
 "\\bd*",
+"\\it",
+"\\it*",
 "\\imtit*",
 "\\bdit",
 "\\bdit*",

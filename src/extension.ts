@@ -3,7 +3,7 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 import * as path from 'path';
-import { ServerOptions, TransportKind, LanguageClientOptions, LanguageClient } from 'vscode-languageclient';
+import { ServerOptions, TransportKind, LanguageClientOptions, LanguageClient } from 'vscode-languageclient/node';
 import { workspace } from 'vscode';
 
 let client: LanguageClient;
@@ -11,7 +11,7 @@ let client: LanguageClient;
 export function activate(context: vscode.ExtensionContext) {
 
     let serverModule = context.asAbsolutePath(
-        path.join('out', 'server.js')
+        path.join('dist', 'server.js')
     );
 
     let debugOptions = {execArgv: ['--nolazy', '--inspect=6009']};
