@@ -26,6 +26,10 @@ Added support for more markers in the syntax checking
 
 Added support for more markers in the syntax checking
 
+### 0.2.0
+
+Added support for \it and \it* markers as well as cut the extension size back by quite a bit
+
 ## Known issues
 
 Currently there is no support for USFM milestones and those milestone markers will be marked incorrectly by the syntax checker
