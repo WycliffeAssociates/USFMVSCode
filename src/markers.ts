@@ -57,6 +57,7 @@ let ValidMarkers: string[] = [
 "\\mt1",
 "\\mt2",
 "\\mt3",
+"\\mt4",
 "\\mte",
 "\\mte1",
 "\\mte2",
