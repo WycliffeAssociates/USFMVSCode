@@ -72,7 +72,7 @@ export function activate(context: vscode.ExtensionContext) {
             const targetChapter = parseInt(parts[0], 10);
             const targetVerse = parts.length > 1 ? parseInt(parts[1], 10) : null;
 
-            const lines = editor.document.getText().split('\n');
+            const lines = editor.document.getText().split(/\r?\n/);
             let chapterLine = -1;
             let targetLine = -1;
 

@@ -76,7 +76,7 @@ connection.onDocumentSymbol((params: DocumentSymbolParams): DocumentSymbol[] => 
     if (!document) return [];
 
     const text = document.getText();
-    const lines = text.split('\n');
+    const lines = text.split(/\r?\n/);
     const lastLine = lines.length - 1;
 
     const symbols: DocumentSymbol[] = [];
