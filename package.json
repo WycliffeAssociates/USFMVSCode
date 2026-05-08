@@ -12,7 +12,8 @@
         "Other"
     ],
     "activationEvents": [
-        "onLanguage:usfm"
+        "onLanguage:usfm",
+        "onCommand:usfmvscode.goToReference"
     ],
     "main": "./dist/extension",
     "contributes": {
