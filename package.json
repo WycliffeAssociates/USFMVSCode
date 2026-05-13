@@ -12,7 +12,8 @@
         "Other"
     ],
     "activationEvents": [
-        "onLanguage:usfm"
+        "onLanguage:usfm",
+        "onCommand:usfmvscode.goToReference"
     ],
     "main": "./dist/extension",
     "contributes": {
@@ -32,6 +33,20 @@
                 "language": "usfm",
                 "scopeName": "source.usfm",
                 "path": "./syntaxes/usfm.tmGrammer.json"
+            }
+        ],
+        "commands": [
+            {
+                "command": "usfmvscode.goToReference",
+                "title": "USFM: Go to Reference"
+            }
+        ],
+        "keybindings": [
+            {
+                "command": "usfmvscode.goToReference",
+                "key": "ctrl+alt+g",
+                "mac": "cmd+alt+g",
+                "when": "editorLangId == usfm"
             }
         ]
     },
