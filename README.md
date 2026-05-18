@@ -34,6 +34,10 @@ Added support for \it and \it* markers as well as cut the extension size back by
 
 Added support for \fq* and \im
 
+### 0.3.0
+
+Added document outline and go-to-reference support, plus the \mt4 marker
+
 ## Known issues
 
 Currently there is no support for USFM milestones and those milestone markers will be marked incorrectly by the syntax checker
