@@ -50,11 +50,15 @@ documents.onDidChangeContent(change => { validateUSFM(change.document);});
 
 async function validateUSFM(textDocument: TextDocument) : Promise<void> {
     let text = textDocument.getText();
-    let pattern = /\\[a-z0-9\-]*\**/g;
+    // The optional leading "+" marks a nested character marker, e.g. \+add or \+bd*.
+    // See https://ubsicap.github.io/usfm/characters/nesting.html
+    let pattern = /\\\+?[a-z0-9\-]*\**/g;
     let diagnostics: Diagnostic[] = [];
     let m: RegExpExecArray | null;
     while((m = pattern.exec(text))){
-        if(ValidMarkers.indexOf(m[0]) === -1){
+        // A nested marker is valid wherever its base marker is, so strip the "+" before checking.
+        let marker = m[0].replace(/^\\\+/, "\\");
+        if(ValidMarkers.indexOf(marker) === -1){
             diagnostics.push(
                 {
                     severity: DiagnosticSeverity.Error,
