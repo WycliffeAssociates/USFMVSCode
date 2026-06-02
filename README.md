@@ -38,6 +38,14 @@ Added support for \fq* and \im
 
 Added document outline and go-to-reference support, plus the \mt4 marker
 
+### 0.3.1
+
+Dependency updates
+
+### 0.3.2
+
+Added support for nested character markers (e.g. `\+add`, `\+bd*`) in syntax highlighting and checking
+
 ## Known issues
 
 Currently there is no support for USFM milestones and those milestone markers will be marked incorrectly by the syntax checker
