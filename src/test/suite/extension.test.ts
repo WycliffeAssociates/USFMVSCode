@@ -1,22 +1,38 @@
 //
-// Note: This example test is leveraging the Mocha test framework.
-// Please refer to their documentation on https://mochajs.org/ for help.
+// Integration tests that run inside a real VS Code host (via @vscode/test-electron).
+// The extension's pure logic is covered by the fast unit tests under test/unit/;
+// these verify the extension actually loads and wires itself up in VS Code.
 //
 
-// The module 'assert' provides assertion methods from node
 import * as assert from 'assert';
+import * as vscode from 'vscode';
 
-// You can import and use all API from the 'vscode' module
-// as well as import your extension to test it
-// import * as vscode from 'vscode';
-// import * as myExtension from '../extension';
+const EXTENSION_ID = 'wycliffeassociates.usfmvscode';
 
-// Defines a Mocha test suite to group tests of similar kind together
-suite("Extension Tests", function () {
+suite('Extension integration', () => {
+    test('extension is installed and discoverable', () => {
+        assert.ok(
+            vscode.extensions.getExtension(EXTENSION_ID),
+            `extension ${EXTENSION_ID} should be discoverable`
+        );
+    });
 
-    // Defines a Mocha unit test
-    test("Something 1", function() {
-        assert.equal(-1, [1, 2, 3].indexOf(5));
-        assert.equal(-1, [1, 2, 3].indexOf(0));
+    test('activates and registers the goToReference command', async () => {
+        const ext = vscode.extensions.getExtension(EXTENSION_ID);
+        assert.ok(ext, `extension ${EXTENSION_ID} should be discoverable`);
+
+        await ext!.activate();
+        assert.strictEqual(ext!.isActive, true, 'extension should activate');
+
+        const commands = await vscode.commands.getCommands(true);
+        assert.ok(
+            commands.includes('usfmvscode.goToReference'),
+            'usfmvscode.goToReference command should be registered'
+        );
+    });
+
+    test('registers the usfm language', async () => {
+        const languages = await vscode.languages.getLanguages();
+        assert.ok(languages.includes('usfm'), 'usfm language should be registered');
     });
 });

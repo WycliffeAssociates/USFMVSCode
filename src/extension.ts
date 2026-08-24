@@ -5,6 +5,7 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import { ServerOptions, TransportKind, LanguageClientOptions, LanguageClient } from 'vscode-languageclient/node';
 import { workspace } from 'vscode';
+import { isValidReferenceInput, parseReference, findReferenceLine } from './reference';
 
 let client: LanguageClient;
 
@@ -60,43 +61,20 @@ export function activate(context: vscode.ExtensionContext) {
                 prompt: 'Enter a reference (e.g. 3 or 3:5)',
                 placeHolder: 'chapter:verse',
                 validateInput: (value) => {
-                    if (!/^\d+(?::\d+)?$/.test(value.trim())) {
+                    if (!isValidReferenceInput(value)) {
                         return 'Use the format: chapter (e.g. 3) or chapter:verse (e.g. 3:5)';
                     }
                     return null;
                 }
             });
-            if (!input) return;
+            if (!input) {return;}
 
-            const parts = input.trim().split(':');
-            const targetChapter = parseInt(parts[0], 10);
-            const targetVerse = parts.length > 1 ? parseInt(parts[1], 10) : null;
+            const reference = parseReference(input);
+            if (!reference) {return;}
+            const { chapter: targetChapter, verse: targetVerse } = reference;
 
             const lines = editor.document.getText().split(/\r?\n/);
-            let chapterLine = -1;
-            let targetLine = -1;
-
-            for (let i = 0; i < lines.length; i++) {
-                const line = lines[i];
-
-                if (chapterLine === -1) {
-                    const m = line.match(/\\c\s+(\d+)/);
-                    if (m && parseInt(m[1], 10) === targetChapter) {
-                        chapterLine = i;
-                        if (targetVerse === null) {
-                            targetLine = i;
-                            break;
-                        }
-                    }
-                } else {
-                    if (/\\c\s+\d+/.test(line)) break;
-                    const m = line.match(/\\v\s+(\d+)/);
-                    if (m && parseInt(m[1], 10) === targetVerse) {
-                        targetLine = i;
-                        break;
-                    }
-                }
-            }
+            const { line: targetLine, chapterLine } = findReferenceLine(lines, targetChapter, targetVerse);
 
             if (targetLine === -1) {
                 const msg = chapterLine === -1
