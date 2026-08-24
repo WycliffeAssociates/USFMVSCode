@@ -6,7 +6,7 @@
     "publisher": "wycliffeassociates",
     "repository": "https://github.com/WycliffeAssociates/USFMVSCode",
     "engines": {
-        "vscode": "^1.36.0"
+        "vscode": "^1.71.0"
     },
     "categories": [
         "Other"
