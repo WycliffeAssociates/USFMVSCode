@@ -9,10 +9,12 @@ export function run(): Promise<void> {
 		color: true
 	});
 
-	const testsRoot = path.resolve(__dirname, '..');
+	// Only the integration tests under suite/ need the VS Code host. The pure
+	// unit tests under test/unit/ are run separately via plain Node Mocha.
+	const testsRoot = path.resolve(__dirname);
 
 	return new Promise((c, e) => {
-		glob('**/**.test.js', { cwd: testsRoot }, (err, files) => {
+		glob('**/*.test.js', { cwd: testsRoot }, (err, files) => {
 			if (err) {
 				return e(err);
 			}

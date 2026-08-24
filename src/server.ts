@@ -1,21 +1,18 @@
 import {
     createConnection,
     TextDocuments,
-    Diagnostic,
-    DiagnosticSeverity,
     ProposedFeatures,
     InitializeParams,
     DidChangeConfigurationNotification,
     TextDocumentSyncKind,
     DocumentSymbol,
     DocumentSymbolParams,
-    SymbolKind,
-    Range,
 } from 'vscode-languageserver/node';
 
 import { TextDocument } from 'vscode-languageserver-textdocument';
 
-import ValidMarkers from './markers';
+import { computeDiagnostics } from './markerValidation';
+import { parseUSFMDocumentSymbols } from './documentSymbols';
 
 let connection = createConnection(ProposedFeatures.all);
 let documents: TextDocuments<TextDocument> = new TextDocuments(TextDocument);
@@ -49,99 +46,15 @@ connection.onInitialized(() =>{
 documents.onDidChangeContent(change => { validateUSFM(change.document);});
 
 async function validateUSFM(textDocument: TextDocument) : Promise<void> {
-    let text = textDocument.getText();
-    // The optional leading "+" marks a nested character marker, e.g. \+add or \+bd*.
-    // See https://ubsicap.github.io/usfm/characters/nesting.html
-    let pattern = /\\\+?[a-z0-9\-]*\**/g;
-    let diagnostics: Diagnostic[] = [];
-    let m: RegExpExecArray | null;
-    while((m = pattern.exec(text))){
-        // A nested marker is valid wherever its base marker is, so strip the "+" before checking.
-        let marker = m[0].replace(/^\\\+/, "\\");
-        if(ValidMarkers.indexOf(marker) === -1){
-            diagnostics.push(
-                {
-                    severity: DiagnosticSeverity.Error,
-                    range: {
-                        start:textDocument.positionAt(m.index),
-                        end: textDocument.positionAt(m.index + m[0].length),
-                    },
-                    message: `${m[0]} is not a valid marker`,
-                    source: "ex"
-                }
-            );
-        }
-    }
+    let diagnostics = computeDiagnostics(textDocument);
     connection.sendDiagnostics({uri: textDocument.uri, diagnostics});
 }
 
 connection.onDocumentSymbol((params: DocumentSymbolParams): DocumentSymbol[] => {
     const document = documents.get(params.textDocument.uri);
-    if (!document) return [];
+    if (!document) {return [];}
 
-    const text = document.getText();
-    const lines = text.split(/\r?\n/);
-    const lastLine = lines.length - 1;
-
-    const symbols: DocumentSymbol[] = [];
-    let currentChapter: DocumentSymbol | null = null;
-    let currentChapterStartLine = 0;
-    let currentVerse: DocumentSymbol | null = null;
-    let currentVerseStartLine = 0;
-
-    for (let i = 0; i < lines.length; i++) {
-        const line = lines[i];
-
-        const chapterMatch = line.match(/\\c\s+(\d+)/);
-        if (chapterMatch) {
-            if (currentVerse) {
-                currentVerse.range = Range.create(currentVerseStartLine, 0, i - 1, lines[i - 1].length);
-                currentVerse = null;
-            }
-            if (currentChapter) {
-                currentChapter.range = Range.create(currentChapterStartLine, 0, i - 1, lines[i - 1].length);
-            }
-            const selRange = Range.create(i, 0, i, line.length);
-            currentChapter = DocumentSymbol.create(
-                `Chapter ${chapterMatch[1]}`,
-                undefined,
-                SymbolKind.Module,
-                selRange,
-                selRange,
-                []
-            );
-            currentChapterStartLine = i;
-            symbols.push(currentChapter);
-            continue;
-        }
-
-        const verseMatch = line.match(/\\v\s+(\d+)/);
-        if (verseMatch && currentChapter) {
-            if (currentVerse) {
-                currentVerse.range = Range.create(currentVerseStartLine, 0, i - 1, lines[i - 1].length);
-            }
-            const selRange = Range.create(i, 0, i, line.length);
-            currentVerse = DocumentSymbol.create(
-                `Verse ${verseMatch[1]}`,
-                undefined,
-                SymbolKind.String,
-                selRange,
-                selRange,
-                []
-            );
-            currentVerseStartLine = i;
-            currentChapter.children!.push(currentVerse);
-        }
-    }
-
-    if (currentVerse) {
-        currentVerse.range = Range.create(currentVerseStartLine, 0, lastLine, lines[lastLine].length);
-    }
-    if (currentChapter) {
-        currentChapter.range = Range.create(currentChapterStartLine, 0, lastLine, lines[lastLine].length);
-    }
-
-    return symbols;
+    return parseUSFMDocumentSymbols(document.getText());
 });
 
 documents.listen(connection);

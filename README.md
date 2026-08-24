@@ -8,6 +8,30 @@ Language support for USFM
 
 Basic syntax highlighting
 
+## Development
+
+Install dependencies with `npm ci`, then:
+
+- `npm run compile` — bundle the extension and language server into `dist/` with webpack.
+- `npm run watch` — rebuild on change while developing.
+- Press <kbd>F5</kbd> (the **Run Extension** launch config) to open a new VS Code window with the extension loaded.
+
+## Testing
+
+The core logic (marker validation, the document outline, and reference
+navigation) is factored into small modules under `src/` so it can be tested
+without a running editor.
+
+- `npm test` — fast unit tests (plain Node + Mocha, no VS Code host required).
+  Runs in CI on every pull request.
+- `npm run test:integration` — integration tests that launch a real VS Code
+  instance via `@vscode/test-electron` and verify the extension activates and
+  registers its command and language. On a headless Linux machine, run this
+  under a virtual display (e.g. `xvfb-run -a npm run test:integration`).
+
+Unit tests live in `src/test/unit/`; integration tests live in
+`src/test/suite/`.
+
 ## Release Notes
 
 ### 0.0.1
@@ -45,6 +69,10 @@ Dependency updates
 ### 0.3.2
 
 Added support for nested character markers (e.g. `\+add`, `\+bd*`) in syntax highlighting and checking
+
+### 0.4.0
+
+Added an automated test suite covering marker validation, the document outline, and reference navigation. Extracted the core logic into standalone modules and migrated linting from tslint to eslint.
 
 ## Known issues
 
