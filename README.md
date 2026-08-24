@@ -74,6 +74,10 @@ Added support for nested character markers (e.g. `\+add`, `\+bd*`) in syntax hig
 
 Added an automated test suite covering marker validation, the document outline, and reference navigation. Extracted the core logic into standalone modules and migrated linting from tslint to eslint.
 
+### 0.4.1
+
+Dependency updates
+
 ## Known issues
 
 Currently there is no support for USFM milestones and those milestone markers will be marked incorrectly by the syntax checker

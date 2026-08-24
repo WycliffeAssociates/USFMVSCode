@@ -1,6 +1,9 @@
 # Change Log
 Change log for USFMVSCode
 
+## [0.4.1]
+- Dependency updates: bumped fast-uri, brace-expansion, and js-yaml.
+
 ## [0.4.0]
 - Added an automated test suite: unit tests for marker validation, the document
   outline, and reference navigation, plus VS Code integration smoke tests.
