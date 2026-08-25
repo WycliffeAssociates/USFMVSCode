@@ -128,4 +128,103 @@ suite('parseUSFMDocumentSymbols', () => {
     test('does not treat uppercase \\C / \\V as chapter/verse markers', () => {
         assert.deepStrictEqual(parseUSFMDocumentSymbols('\\C 1\n\\V 1 text'), []);
     });
+
+    test('nests a verse that shares a line with its chapter marker', () => {
+        const line = '\\c 1 \\v 1 In the beginning';
+        const symbols = parseUSFMDocumentSymbols(`${line}\n\\v 2 And the earth`);
+
+        assert.strictEqual(symbols.length, 1);
+        const children = symbols[0].children || [];
+        assert.deepStrictEqual(children.map((c) => c.name), ['Verse 1', 'Verse 2']);
+
+        // The chapter's own label stops where the verse marker begins.
+        assert.strictEqual(symbols[0].selectionRange.end.character, line.indexOf('\\v 1'));
+        // The verse starts at its marker, not at column 0 of the shared line.
+        assert.deepStrictEqual(children[0].selectionRange.start, { line: 0, character: line.indexOf('\\v 1') });
+        assert.deepStrictEqual(children[0].selectionRange.end, { line: 0, character: line.length });
+        // Verse 1 still closes at the end of its line, since verse 2 opens the next one.
+        assert.deepStrictEqual(children[0].range.start, { line: 0, character: line.indexOf('\\v 1') });
+        assert.deepStrictEqual(children[0].range.end, { line: 0, character: line.length });
+        // The chapter keeps the whole shared line and runs to the end of the document.
+        assert.deepStrictEqual(symbols[0].range.start, { line: 0, character: 0 });
+        assert.deepStrictEqual(symbols[0].range.end, { line: 1, character: '\\v 2 And the earth'.length });
+    });
+
+    test('lists every verse when a whole chapter sits on one line', () => {
+        const line = '\\c 1 \\p \\v 1 alpha \\v 2 beta \\v 3 gamma';
+        const symbols = parseUSFMDocumentSymbols(line);
+
+        assert.strictEqual(symbols.length, 1);
+        const children = symbols[0].children || [];
+        assert.deepStrictEqual(children.map((c) => c.name), ['Verse 1', 'Verse 2', 'Verse 3']);
+
+        // Each verse claims its own slice of the line, ending where the next begins.
+        assert.deepStrictEqual(children.map((c) => c.range.start.character), [
+            line.indexOf('\\v 1'),
+            line.indexOf('\\v 2'),
+            line.indexOf('\\v 3'),
+        ]);
+        assert.deepStrictEqual(children.map((c) => c.range.end.character), [
+            line.indexOf('\\v 2'),
+            line.indexOf('\\v 3'),
+            line.length,
+        ]);
+        assert.deepStrictEqual(children.map((c) => c.range.end.line), [0, 0, 0]);
+    });
+
+    test('picks up every verse when several share a line below the chapter', () => {
+        const line = '\\p \\v 1 alpha \\v 2 beta \\v 3 gamma';
+        const symbols = parseUSFMDocumentSymbols(`\\c 1\n${line}`);
+
+        const children = symbols[0].children || [];
+        assert.deepStrictEqual(children.map((c) => c.name), ['Verse 1', 'Verse 2', 'Verse 3']);
+        assert.strictEqual(children[0].range.start.character, line.indexOf('\\v 1'));
+        // The chapter still closes at the end of the document.
+        assert.deepStrictEqual(symbols[0].range.end, { line: 1, character: line.length });
+    });
+
+    test('splits a line that holds two chapters', () => {
+        const line = '\\c 1 \\v 1 a \\c 2 \\v 1 b';
+        const symbols = parseUSFMDocumentSymbols(line);
+
+        assert.deepStrictEqual(symbols.map((s) => s.name), ['Chapter 1', 'Chapter 2']);
+        // Chapter 1 (and its verse) stop where \c 2 begins.
+        assert.strictEqual(symbols[0].range.end.character, line.indexOf('\\c 2'));
+        assert.strictEqual((symbols[0].children || [])[0].range.end.character, line.indexOf('\\c 2'));
+        // Chapter 2 starts at its own marker and runs to the end of the line.
+        assert.strictEqual(symbols[1].range.start.character, line.indexOf('\\c 2'));
+        assert.strictEqual(symbols[1].range.end.character, line.length);
+        assert.deepStrictEqual((symbols[1].children || []).map((c) => c.name), ['Verse 1']);
+    });
+
+    test('ignores an orphan verse that precedes the chapter on the same line', () => {
+        const line = '\\v 1 orphan \\c 1 \\v 1 real';
+        const symbols = parseUSFMDocumentSymbols(line);
+
+        assert.strictEqual(symbols.length, 1);
+        const children = symbols[0].children || [];
+        assert.strictEqual(children.length, 1);
+        assert.strictEqual(children[0].range.start.character, line.lastIndexOf('\\v 1'));
+    });
+    test('closes a chapter that shares a line at the end of that line', () => {
+        const first = '\\c 1 \\v 1 a';
+        const symbols = parseUSFMDocumentSymbols(`${first}\n\\c 2 \\v 1 b`);
+
+        assert.deepStrictEqual(symbols.map((s) => s.name), ['Chapter 1', 'Chapter 2']);
+        // Chapter 2 opens the next line, so chapter 1 and its verse close at the end of line 0.
+        assert.deepStrictEqual(symbols[0].range.end, { line: 0, character: first.length });
+        assert.deepStrictEqual((symbols[0].children || [])[0].range.end, { line: 0, character: first.length });
+        assert.deepStrictEqual(symbols[1].range.start, { line: 1, character: 0 });
+    });
+
+    test('a marker that merely starts late on its line still closes the previous line', () => {
+        // "\p \v 2 b" holds one verse marker, so verse 1 keeps its whole-line extent
+        // instead of swallowing the "\p " that belongs to the next paragraph.
+        const symbols = parseUSFMDocumentSymbols('\\c 1\n\\v 1 a\n\\p \\v 2 b');
+
+        const children = symbols[0].children || [];
+        assert.deepStrictEqual(children.map((c) => c.name), ['Verse 1', 'Verse 2']);
+        assert.deepStrictEqual(children[0].range.end, { line: 1, character: '\\v 1 a'.length });
+        assert.deepStrictEqual(children[1].range.start, { line: 2, character: '\\p '.length });
+    });
 });

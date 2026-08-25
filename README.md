@@ -18,9 +18,9 @@ Install dependencies with `npm ci`, then:
 
 ## Testing
 
-The core logic (marker validation, the document outline, and reference
-navigation) is factored into small modules under `src/` so it can be tested
-without a running editor.
+The core logic (marker validation, chapter/verse marker scanning, the document
+outline, and reference navigation) is factored into small modules under `src/`
+so it can be tested without a running editor.
 
 - `npm test` — fast unit tests (plain Node + Mocha, no VS Code host required).
   Runs in CI on every pull request.
@@ -77,6 +77,10 @@ Added an automated test suite covering marker validation, the document outline, 
 ### 0.4.1
 
 Dependency updates
+
+### 0.4.2
+
+Fixed the document outline and go-to-reference skipping `\c` and `\v` markers that share a line with another marker, such as `\c 1 \v 1 In the beginning` or a whole chapter on a single line
 
 ## Known issues
 

@@ -74,7 +74,8 @@ export function activate(context: vscode.ExtensionContext) {
             const { chapter: targetChapter, verse: targetVerse } = reference;
 
             const lines = editor.document.getText().split(/\r?\n/);
-            const { line: targetLine, chapterLine } = findReferenceLine(lines, targetChapter, targetVerse);
+            const { line: targetLine, character: targetCharacter, chapterLine } =
+                findReferenceLine(lines, targetChapter, targetVerse);
 
             if (targetLine === -1) {
                 const msg = chapterLine === -1
@@ -84,7 +85,9 @@ export function activate(context: vscode.ExtensionContext) {
                 return;
             }
 
-            const position = new vscode.Position(targetLine, 0);
+            // Land on the marker itself, which is not column 0 when the
+            // reference shares a line with other chapter/verse markers.
+            const position = new vscode.Position(targetLine, targetCharacter);
             editor.selection = new vscode.Selection(position, position);
             editor.revealRange(new vscode.Range(position, position), vscode.TextEditorRevealType.AtTop);
         }));

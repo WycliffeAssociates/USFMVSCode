@@ -1,6 +1,12 @@
 # Change Log
 Change log for USFMVSCode
 
+## [0.4.2]
+- Fixed the document outline and go-to-reference missing `\c` and `\v` markers
+  that share a line with another marker (e.g. `\c 1 \v 1 ...` or a whole
+  chapter on one line). Both features now scan every marker on a line, and
+  go-to-reference puts the cursor on the marker itself rather than column 0.
+
 ## [0.4.1]
 - Dependency updates: bumped fast-uri, brace-expansion, and js-yaml.
 

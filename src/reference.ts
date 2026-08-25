@@ -1,3 +1,5 @@
+import { findChapterVerseMarkers } from './chapterVerse';
+
 /**
  * A parsed scripture reference. `verse` is null when only a chapter was given.
  */
@@ -8,12 +10,15 @@ export interface Reference {
 
 /**
  * Where a reference resolves to within a document's lines.
- * `line` is -1 when the target could not be found. `chapterLine` is -1 when the
- * chapter itself was never found (used to distinguish "chapter missing" from
- * "verse missing within the chapter").
+ * `line` and `character` are -1 when the target could not be found.
+ * `character` is the offset of the resolved marker within its line, which
+ * matters when a line holds several markers (`\c 1 \v 1 ... \v 2 ...`).
+ * `chapterLine` is -1 when the chapter itself was never found (used to
+ * distinguish "chapter missing" from "verse missing within the chapter").
  */
 export interface ReferenceLocation {
     line: number;
+    character: number;
     chapterLine: number;
 }
 
@@ -41,12 +46,16 @@ export function parseReference(input: string): Reference | null {
 }
 
 /**
- * Find the line (0-based) of a chapter or chapter:verse reference in USFM text.
+ * Find the position (0-based line and character) of a chapter or chapter:verse
+ * reference in USFM text.
  *
- * The first `\c <targetChapter>` line is located; when a verse is requested,
+ * The first `\c <targetChapter>` marker is located; when a verse is requested,
  * the search then walks forward for `\v <targetVerse>` and stops at the next
  * `\c` marker (verses are only matched within their chapter). When only a
- * chapter is requested, its own line is the target.
+ * chapter is requested, the chapter marker itself is the target.
+ *
+ * Markers are matched wherever they appear, so a verse is still found when it
+ * shares a line with its chapter marker or with other verses.
  */
 export function findReferenceLine(
     lines: string[],
@@ -54,31 +63,28 @@ export function findReferenceLine(
     targetVerse: number | null
 ): ReferenceLocation {
     let chapterLine = -1;
-    let targetLine = -1;
+    let inTargetChapter = false;
 
-    for (let i = 0; i < lines.length; i++) {
-        const line = lines[i];
-
-        if (chapterLine === -1) {
-            const m = line.match(/\\c\s+(\d+)/);
-            if (m && parseInt(m[1], 10) === targetChapter) {
-                chapterLine = i;
+    for (const marker of findChapterVerseMarkers(lines)) {
+        if (marker.kind === 'chapter') {
+            if (inTargetChapter) {
+                // The target chapter ended without the verse turning up.
+                break;
+            }
+            if (marker.number === targetChapter) {
+                chapterLine = marker.line;
                 if (targetVerse === null) {
-                    targetLine = i;
-                    break;
+                    return { line: marker.line, character: marker.character, chapterLine };
                 }
+                inTargetChapter = true;
             }
-        } else {
-            if (/\\c\s+\d+/.test(line)) {
-                break;
-            }
-            const m = line.match(/\\v\s+(\d+)/);
-            if (m && parseInt(m[1], 10) === targetVerse) {
-                targetLine = i;
-                break;
-            }
+            continue;
+        }
+
+        if (inTargetChapter && marker.number === targetVerse) {
+            return { line: marker.line, character: marker.character, chapterLine };
         }
     }
 
-    return { line: targetLine, chapterLine };
+    return { line: -1, character: -1, chapterLine };
 }
