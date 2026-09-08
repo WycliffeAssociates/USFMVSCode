@@ -1,6 +1,11 @@
 # Change Log
 Change log for USFMVSCode
 
+## [0.4.3]
+- Dependency updates: bumped fast-uri and browserslist.
+- Packaging: excluded `.claude/`, `.github/`, and other development-only files
+  from the published extension.
+
 ## [0.4.2]
 - Fixed the document outline and go-to-reference missing `\c` and `\v` markers
   that share a line with another marker (e.g. `\c 1 \v 1 ...` or a whole

@@ -82,6 +82,10 @@ Dependency updates
 
 Fixed the document outline and go-to-reference skipping `\c` and `\v` markers that share a line with another marker, such as `\c 1 \v 1 In the beginning` or a whole chapter on a single line
 
+### 0.4.3
+
+Dependency updates
+
 ## Known issues
 
 Currently there is no support for USFM milestones and those milestone markers will be marked incorrectly by the syntax checker

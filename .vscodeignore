@@ -11,3 +11,8 @@ vsc-extension-quickstart.md
 **/.eslintrc.json
 **/*.map
 **/*.ts
+.claude/**
+.github/**
+.gitattributes
+.gitmodules
+CLAUDE.md
