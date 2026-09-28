@@ -1,6 +1,12 @@
 # Change Log
 Change log for USFMVSCode
 
+## [0.5.0]
+- Fixed soft word wrap splitting nested character markers such as `\+add`
+  across lines (a lone `\` at the end of one line and `+add` starting the next).
+  USFM files now default `editor.wordWrapBreakBeforeCharacters` to VS Code's
+  list minus `+` and `＋`. Added integration tests covering the wrap behaviour.
+
 ## [0.4.3]
 - Dependency updates: bumped fast-uri and browserslist.
 - Packaging: excluded `.claude/`, `.github/`, and other development-only files

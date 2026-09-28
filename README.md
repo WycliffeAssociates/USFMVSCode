@@ -86,6 +86,10 @@ Fixed the document outline and go-to-reference skipping `\c` and `\v` markers th
 
 Dependency updates
 
+### 0.5.0
+
+Fixed word wrap splitting nested character markers such as `\+add`
+
 ## Known issues
 
 Currently there is no support for USFM milestones and those milestone markers will be marked incorrectly by the syntax checker
