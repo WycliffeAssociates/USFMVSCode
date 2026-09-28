@@ -48,7 +48,12 @@
                 "mac": "cmd+alt+g",
                 "when": "editorLangId == usfm"
             }
-        ]
+        ],
+        "configurationDefaults": {
+            "[usfm]": {
+                "editor.wordWrapBreakBeforeCharacters": "([{‘“〈《「『【〔（［｛｢£¥＄￡￥"
+            }
+        }
     },
     "scripts": {
         "vscode:prepublish": "npm run package",
