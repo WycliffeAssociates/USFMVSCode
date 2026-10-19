@@ -8,6 +8,9 @@ import ValidMarkers from './markers';
  * nested character marker, e.g. `\+add` or `\+bd*`), the marker name, and any
  * trailing "*" that closes a character marker.
  * See https://ubsicap.github.io/usfm/characters/nesting.html
+ *
+ * The `g` flag is required: `String.prototype.matchAll` throws a TypeError
+ * for a non-global regex.
  */
 const MARKER_PATTERN = /\\\+?[a-z0-9-]*\**/g;
 

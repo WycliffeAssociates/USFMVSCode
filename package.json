@@ -62,11 +62,11 @@
         "package": "webpack --mode production --devtool hidden-source-map",
         "compile-tests": "tsc -p . --outDir out",
         "watch-tests": "tsc -p . -w --outDir out",
-        "pretest": "npm run compile-tests && npm run compile && npm run lint",
         "lint": "eslint src --ext ts --max-warnings 0",
-        "test": "npm run test:unit",
+        "test": "npm run lint && npm run compile-tests && npm run compile && npm run test:unit",
         "test:unit": "mocha --ui tdd \"out/test/unit/**/*.test.js\"",
-        "test:integration": "npm run compile-tests && npm run compile && node ./out/test/runTest.js"
+        "test:integration": "npm run compile-tests && npm run compile && npm run test:integration:run",
+        "test:integration:run": "node ./out/test/runTest.js"
     },
     "dependencies": {
         "vscode-languageclient": "^8.0.2",
@@ -74,6 +74,7 @@
         "vscode-languageserver-textdocument": "^1.0.7"
     },
     "devDependencies": {
+        "@stylistic/eslint-plugin": "^3.1.0",
         "@types/glob": "^8.0.0",
         "@types/mocha": "^9.1.1",
         "@types/node": "^16.18.126",
