@@ -13,20 +13,26 @@
 			"warn",
 			{
 				"selector": "class",
-				"format": ["PascalCase"]
+				"format": [
+					"PascalCase"
+				]
 			}
 		],
 		"@typescript-eslint/semi": "warn",
 		"curly": "warn",
 		"eqeqeq": "warn",
 		"no-throw-literal": "warn",
-		"no-unused-expressions": "warn",
 		"no-redeclare": "warn",
-		"semi": "off"
+		"semi": "off",
+		"@typescript-eslint/no-unused-expressions": "warn"
 	},
 	"ignorePatterns": [
 		"out",
 		"dist",
 		"**/*.d.ts"
+	],
+	"extends": [
+		"eslint:recommended",
+		"plugin:@typescript-eslint/recommended"
 	]
 }

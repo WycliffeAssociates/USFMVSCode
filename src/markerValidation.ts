@@ -9,7 +9,7 @@ import ValidMarkers from './markers';
  * trailing "*" that closes a character marker.
  * See https://ubsicap.github.io/usfm/characters/nesting.html
  */
-const MARKER_PATTERN = /\\\+?[a-z0-9\-]*\**/g;
+const MARKER_PATTERN = /\\\+?[a-z0-9-]*\**/g;
 
 /**
  * Normalise a raw match to the marker used for validity lookups. A nested
@@ -37,15 +37,14 @@ export interface InvalidMarker {
  * TextDocument or language server connection.
  */
 export function findInvalidMarkers(text: string): InvalidMarker[] {
-    // A fresh RegExp instance per call keeps the stateful `g` flag isolated.
-    const pattern = new RegExp(MARKER_PATTERN.source, 'g');
+    // matchAll iterates over its own copy of the regex, so the shared
+    // pattern's `lastIndex` is never touched.
     const invalid: InvalidMarker[] = [];
-    let m: RegExpExecArray | null;
-    while ((m = pattern.exec(text))) {
+    for (const m of text.matchAll(MARKER_PATTERN)) {
         const raw = m[0];
         const marker = normalizeMarker(raw);
         if (ValidMarkers.indexOf(marker) === -1) {
-            invalid.push({ raw, marker, index: m.index, length: raw.length });
+            invalid.push({ raw, marker, index: m.index!, length: raw.length });
         }
     }
     return invalid;
@@ -64,6 +63,6 @@ export function computeDiagnostics(textDocument: TextDocument): Diagnostic[] {
             end: textDocument.positionAt(item.index + item.length),
         },
         message: `${item.raw} is not a valid marker`,
-        source: 'ex',
+        source: 'usfm',
     }));
 }

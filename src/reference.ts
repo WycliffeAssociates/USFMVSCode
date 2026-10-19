@@ -36,7 +36,7 @@ export function isValidReferenceInput(value: string): boolean {
  */
 export function parseReference(input: string): Reference | null {
     const trimmed = input.trim();
-    if (!isValidReferenceInput(trimmed)) {
+    if (!REFERENCE_INPUT_PATTERN.test(trimmed)) {
         return null;
     }
     const parts = trimmed.split(':');
