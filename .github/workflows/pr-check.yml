@@ -31,20 +31,18 @@ jobs:
     - name: Install dependencies
       run: npm ci
     
-    - name: Lint
-      run: npm run lint -- --max-warnings 0
-
-    - name: Compile project
-      run: npm run compile
-
-    - name: Run unit tests
+    # `npm test` lints (--max-warnings 0), compiles the tests (tsc) and bundles
+    # the extension (webpack) before running the unit tests.
+    - name: Lint, compile and run unit tests
       run: npm test
 
     # The integration tests launch a real VS Code instance, which needs a
     # display. GitHub's Linux runners are headless, so run them under a
     # virtual framebuffer (xvfb is preinstalled on ubuntu-latest).
+    # Use test:integration:run rather than test:integration, which would
+    # recompile everything the previous step just built.
     - name: Run integration tests
-      run: xvfb-run -a npm run test:integration
+      run: xvfb-run -a npm run test:integration:run
 
     - name: Build production package
       run: npm run package

@@ -1,4 +1,4 @@
-let ValidMarkers: string[] = [
+const ValidMarkers: string[] = [
 "\\id",
 "\\usfm",
 "\\ide",

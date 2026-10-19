@@ -11,13 +11,13 @@ let client: LanguageClient;
 
 export function activate(context: vscode.ExtensionContext) {
 
-    let serverModule = context.asAbsolutePath(
+    const serverModule = context.asAbsolutePath(
         path.join('dist', 'server.js')
     );
 
-    let debugOptions = {execArgv: ['--nolazy', '--inspect=6009']};
+    const debugOptions = {execArgv: ['--nolazy', '--inspect=6009']};
 
-    let serverOptions: ServerOptions = {
+    const serverOptions: ServerOptions = {
             run: { module: serverModule, transport: TransportKind.ipc },
             debug: {
                 module: serverModule,
@@ -27,7 +27,7 @@ export function activate(context: vscode.ExtensionContext) {
         };
 
         // Options to control the language client
-        let clientOptions: LanguageClientOptions = {
+        const clientOptions: LanguageClientOptions = {
             // Register the server for plain text documents
             documentSelector: [{ scheme: 'file', language: 'usfm' }],
             synchronize: {
@@ -46,7 +46,7 @@ export function activate(context: vscode.ExtensionContext) {
 
         // Start the client. This will also launch the server
         client.start();
-        context.subscriptions.push(vscode.commands.registerCommand("usfmvscode.test", (param) => {
+        context.subscriptions.push(vscode.commands.registerCommand("usfmvscode.test", () => {
             client.sendRequest("custom/request", "Hello world");
         }));
 

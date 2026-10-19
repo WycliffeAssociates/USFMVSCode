@@ -27,7 +27,7 @@ export const REFERENCE_INPUT_PATTERN = /^\d+(?::\d+)?$/;
 
 /** Validate raw user input for the go-to-reference prompt (trims first). */
 export function isValidReferenceInput(value: string): boolean {
-    return REFERENCE_INPUT_PATTERN.test(value.trim());
+    return parseReference(value) !== null;
 }
 
 /**
@@ -36,7 +36,7 @@ export function isValidReferenceInput(value: string): boolean {
  */
 export function parseReference(input: string): Reference | null {
     const trimmed = input.trim();
-    if (!isValidReferenceInput(trimmed)) {
+    if (!REFERENCE_INPUT_PATTERN.test(trimmed)) {
         return null;
     }
     const parts = trimmed.split(':');

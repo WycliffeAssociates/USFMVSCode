@@ -14,15 +14,15 @@ import { TextDocument } from 'vscode-languageserver-textdocument';
 import { computeDiagnostics } from './markerValidation';
 import { parseUSFMDocumentSymbols } from './documentSymbols';
 
-let connection = createConnection(ProposedFeatures.all);
-let documents: TextDocuments<TextDocument> = new TextDocuments(TextDocument);
+const connection = createConnection(ProposedFeatures.all);
+const documents: TextDocuments<TextDocument> = new TextDocuments(TextDocument);
 connection.console.log("hit");
 
 let hasConfigurationCapability: boolean = false;
 
 connection.onInitialize((params: InitializeParams) => {
     connection.console.log("Starting initialization");
-    let capabilities = params.capabilities;
+    const capabilities = params.capabilities;
 
     hasConfigurationCapability = !!(
         capabilities.workspace && !!capabilities.workspace.configuration
@@ -46,7 +46,7 @@ connection.onInitialized(() =>{
 documents.onDidChangeContent(change => { validateUSFM(change.document);});
 
 async function validateUSFM(textDocument: TextDocument) : Promise<void> {
-    let diagnostics = computeDiagnostics(textDocument);
+    const diagnostics = computeDiagnostics(textDocument);
     connection.sendDiagnostics({uri: textDocument.uri, diagnostics});
 }
 

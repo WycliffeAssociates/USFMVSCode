@@ -107,7 +107,7 @@ suite('computeDiagnostics', () => {
         const d = diagnostics[0];
         assert.strictEqual(d.severity, DiagnosticSeverity.Error);
         assert.strictEqual(d.message, '\\zz is not a valid marker');
-        assert.strictEqual(d.source, 'ex');
+        assert.strictEqual(d.source, 'usfm');
         // "\zz" begins at offset 5 on the first line.
         assert.deepStrictEqual(d.range.start, { line: 0, character: 5 });
         assert.deepStrictEqual(d.range.end, { line: 0, character: 8 });

@@ -23,7 +23,11 @@ outline, and reference navigation) is factored into small modules under `src/`
 so it can be tested without a running editor.
 
 - `npm test` — fast unit tests (plain Node + Mocha, no VS Code host required).
-  Runs in CI on every pull request.
+  Before the tests run it lints with eslint (`npm run lint`, zero warnings
+  allowed), type-checks, and bundles with webpack, so a passing `npm test`
+  matches what CI checks. These steps are chained in the `test` script itself
+  rather than a `pretest` hook, so they still run when npm's `ignore-scripts`
+  is enabled. Runs in CI on every pull request.
 - `npm run test:integration` — integration tests that launch a real VS Code
   instance via `@vscode/test-electron` and verify the extension activates and
   registers its command and language. On a headless Linux machine, run this
